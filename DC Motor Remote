@@ -1,0 +1,63 @@
+#include <IRremote.h>
+#define ENABLE 1
+#define DIRA 6
+#define DIRB 9
+const int IR_PIN = 2;
+IRrecv irRecv(IR_PIN);
+decode_results results;
+
+#define BUTTON_1 0x1
+#define BUTTON_2 0x2
+#define BUTTON_3 0x3
+#define BUTTON_0 0x33
+#define BUTTON_OK 0x35
+
+int i;
+ 
+void setup() {
+ 
+  //---set pin direction
+  Serial.begin(9600);
+  irRecv.begin(IR_PIN,ENABLE_LED_FEEDBACK);
+  pinMode(ENABLE,OUTPUT);
+  pinMode(DIRA,OUTPUT);
+  pinMode(DIRB,OUTPUT);
+  irRecv.enableIRIn();
+}
+
+void loop() {
+ if (irRecv.decode())
+ {
+     
+      if (irRecv.decodedIRData.decodedRawData == 4077715200
+)
+        for (i=0;i<5;i++) {
+    digitalWrite(DIRA,HIGH); //one way
+    digitalWrite(DIRB,LOW);
+    delay(500);
+    }
+      if (irRecv.decodedIRData.decodedRawData == 3877175040
+
+)
+    {
+       for (i=5;i>0;i--)
+       digitalWrite(DIRA,LOW);  //reverse
+    digitalWrite(DIRB,HIGH);
+    delay(500);
+    }
+
+     if (irRecv.decodedIRData.decodedRawData == 3910598400
+) // ce parametre récupère la valeur zéro afin d'éteindre les LEDS
+    {
+      digitalWrite(ENABLE,LOW); // disable
+          digitalWrite(DIRA,LOW);  //disable
+    digitalWrite(DIRB,LOW);
+  delay(2000);
+    }
+      Serial.print("code=");
+      Serial.println(irRecv.decodedIRData.decodedRawData);
+      delay(500);
+      irRecv.resume();
+     
+ }
+}
